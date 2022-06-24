@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Vladyslav-Kruchok/goit-react-hw-03-image-finder/static/css/main.7acaea2f.css",
+    "main.js": "/Vladyslav-Kruchok/goit-react-hw-03-image-finder/static/js/main.7de1f4e9.js",
+    "index.html": "/Vladyslav-Kruchok/goit-react-hw-03-image-finder/index.html",
+    "main.7acaea2f.css.map": "/Vladyslav-Kruchok/goit-react-hw-03-image-finder/static/css/main.7acaea2f.css.map",
+    "main.7de1f4e9.js.map": "/Vladyslav-Kruchok/goit-react-hw-03-image-finder/static/js/main.7de1f4e9.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7acaea2f.css",
+    "static/js/main.7de1f4e9.js"
+  ]
+}
