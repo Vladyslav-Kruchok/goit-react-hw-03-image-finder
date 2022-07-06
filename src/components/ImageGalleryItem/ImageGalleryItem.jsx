@@ -8,3 +8,9 @@ export const ImageGalleryItem = ({id, webformatURL, onCklick}) => {
         </li>
     );
 };
+
+ImageGalleryItem.propType = {
+    id: PropTypes.number.isRequired,
+    webformatURL: PropTypes.string.isRequired,
+    onCklick: PropTypes.func.isRequired
+};

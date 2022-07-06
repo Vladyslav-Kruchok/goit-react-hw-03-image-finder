@@ -3,12 +3,13 @@ import ProtoTypes from "prop-types";
 import styles from "./Modal.module.css";
 
 export class Modal extends React.Component {
+    static protoType = {
+        onClose: ProtoTypes.func.isRequired
+    };
     componentDidMount() {
-        //console.log("MOUNT MODAL");
         window.addEventListener("keydown", this.handleKeyDown);
     };
     componentWillUnmount() {
-        //console.log("UN-MOUNT MODAL");
         window.removeEventListener("keydown", this.handleKeyDown);
     };
 

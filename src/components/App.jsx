@@ -1,8 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
 
-import { nanoid } from "nanoid";
-
 import { Searchbar } from "../components/Searchbar";
 import { Loader } from "../components/Loader";
 import { ImageGallery } from "../components/ImageGallery";
@@ -14,7 +12,8 @@ import axios from 'axios';
 
 const modalRoot = document.querySelector("#modalRoot");
 axios.defaults.baseURL = 'https://pixabay.com/';
-const PER_PAGE = 200;
+const PER_PAGE = 12;
+const START_PAGE = 1;
 
   export class App extends React.Component {
     state = {
@@ -23,36 +22,39 @@ const PER_PAGE = 200;
       isLoading: false,
       showModalImg: false,
       largeImg: "",
-      page: 1,
+      page: START_PAGE,
       perPage: PER_PAGE,
-      maxPage: 1
+      maxPage: START_PAGE
     };
     componentDidUpdate(prevProps, prevState) {
-      console.log('componentDidUpdate');
       const prevVal = prevState.searchVal;
       const currVal = this.state.searchVal;
-      this.searchAPI(prevVal, currVal);
+      this.searchAPI(prevVal, currVal, this.state.perPage, START_PAGE);
     };
+
     searchAPI= (prevVal, currVal, perPage = this.state.perPage, numbPage = this.state.page) => {
       if (prevVal !== currVal)
       {
         this.setState({ isLoading: true });
         axios
-            //params(search value, per page, bumber of page)
-            .get('api/', this.apiParams(currVal, perPage, numbPage))
+          //params(search value, per page, bumber of page)
+          .get('api/', this.apiParams(currVal, perPage, numbPage))
           .then(responce => {
-            console.log(responce.data.totalHits);
+            const respArr = responce.data.hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL }));            
+            if (numbPage > 1) {
               this.setState((prevState) => {
-                const respArr = responce.data.hits.map(({ id, webformatURL, largeImageURL }) => ({ id, webformatURL, largeImageURL }));
                 const newArr = [...prevState.imgArr, ...respArr];
                 const maxPic = responce.data.totalHits;
-                return { imgArr: newArr,  maxPage: Math.floor(maxPic/this.state.perPage)};
+                return { imgArr: newArr,  maxPage: Math.floor(maxPic/perPage)};
               });
-            })
-            .catch(err => console.log(err))
-            .finally(() => {
-                this.setState({ isLoading: false });
-            });
+            } else {
+              this.setState({imgArr: respArr, page: START_PAGE});
+            }
+          })
+          .catch(err => console.log(err))
+          .finally(() => {
+              this.setState({ isLoading: false });
+          });
         };
     }
     apiParams = (searchVal, perPage, numbPage) => {
@@ -80,21 +82,20 @@ const PER_PAGE = 200;
     btnOnClick = () => {
       const nextPage = this.state.page + 1;
       this.setState({ page: nextPage });
-      this.searchAPI("", this.state.searchVal, 12, nextPage);
+      this.searchAPI("", this.state.searchVal, this.state.perPage, nextPage);
     };
     closeModal = () => {
       this.setState({ showModalImg: false});
     };
     render() {
-      const { isLoading, searchVal, imgArr, showModalImg, largeImg } = this.state;
+      const { isLoading, imgArr, showModalImg, largeImg, page, maxPage} = this.state;
       const imgArrlen = imgArr.length;
     return(
       <div className={styles.App}>
-        goit-react-hw-03-image-finder
         <Searchbar onSubmit={this.getDataExtForm} />
-        {isLoading && <Loader searchVal={searchVal} />}
         <ImageGallery imgArr={imgArr} onClick={this.imgOnClick} />
-        {(imgArrlen > 0 && this.state.page <= this.state.maxPage) && <Button text={"Load more"} onClick={this.btnOnClick} />}
+        {isLoading && <Loader />}
+        {(imgArrlen > 0 && page <= maxPage) && <Button text={"Load more"} onClick={this.btnOnClick} />}
         {showModalImg && createPortal(<Modal onClose = {this.closeModal}><img src={largeImg} alt="Фото" /></Modal>, modalRoot)}
       </div>
     );
