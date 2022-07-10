@@ -1,6 +1,9 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import ProtoTypes from "prop-types";
 import styles from "./Modal.module.css";
+
+const modalRoot = document.querySelector("#modalRoot");
 
 export class Modal extends React.Component {
     static protoType = {
@@ -12,7 +15,6 @@ export class Modal extends React.Component {
     componentWillUnmount() {
         window.removeEventListener("keydown", this.handleKeyDown);
     };
-
     handleKeyDown = (e) => {
         if (e.code === "Escape") {
                 this.props.onClose();
@@ -25,11 +27,13 @@ export class Modal extends React.Component {
     }
     render() { 
         return(
-            <div className={styles.Overlay} onClick = {this.handleBackDropClick}>
+            createPortal (
+                <div className={styles.Overlay} onClick={this.handleBackDropClick}>
                 <div className={styles.Modal}>
                     {this.props.children}
                 </div>
-            </div>
+                </div>
+                ,modalRoot)
         );        
     };
 };
